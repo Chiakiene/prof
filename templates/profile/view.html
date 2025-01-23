@@ -7,51 +7,162 @@
     <div class="profile-card">
         <!-- プロフィールヘッダー -->
         <div class="profile-header">
-            <div class="avatar-container">
-                {% if user.avatar_url %}
-                    <img src="{{ url_for('static', filename=user.avatar_url) }}" 
-                         alt="{{ user.username }}" 
-                         class="avatar">
-                {% else %}
-                    <i data-feather="user" class="avatar-placeholder"></i>
-                {% endif %}
+            <!-- アバター -->
+            <div class="avatar-section">
+                <div class="avatar-container">
+                    {% if user.avatar_url %}
+                        <img src="{{ url_for('static', filename='uploads/' + user.avatar_url) }}" 
+                             alt="{{ user.username }}のプロフィール画像" 
+                             class="avatar-large">
+                    {% else %}
+                        <div class="default-avatar avatar-large">
+                            <span>{{ user.username[0]|upper }}</span>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
-            <h1>{{ user.username }}</h1>
-            
-            {% if user.bio %}
-                <p class="bio">{{ user.bio }}</p>
-            {% endif %}
-            
-            <div class="profile-meta">
-                {% if user.location %}
+
+            <!-- ユーザー情報 -->
+            <div class="profile-info">
+                <h1 class="profile-name">{{ user.username }}</h1>
+                <div class="profile-userid">@{{ user.user_id }}</div>
+                
+                <!-- メタ情報 -->
+                <div class="profile-meta">
+                    {% if user.location %}
                     <div class="meta-item">
                         <i data-feather="map-pin"></i>
                         <span>{{ user.location }}</span>
                     </div>
-                {% endif %}
-                
-                {% if user.website %}
+                    {% endif %}
+                    
+                    {% if user.website %}
                     <div class="meta-item">
-                        <i data-feather="link"></i>
+                        <i data-feather="globe"></i>
                         <a href="{{ user.website }}" target="_blank" rel="noopener">
                             {{ user.website|replace('https://', '')|replace('http://', '') }}
                         </a>
                     </div>
-                {% endif %}
-                
-                <div class="meta-item">
-                    <i data-feather="calendar"></i>
-                    <span>{{ user.created_at.strftime('%Y年%m月') }}に登録</span>
+                    {% endif %}
+                    
+                    <div class="meta-item">
+                        <i data-feather="calendar"></i>
+                        <span>{{ user.created_at.strftime('%Y年%m月') }}に登録</span>
+                    </div>
                 </div>
             </div>
+        </div>
+
+        <!-- 自己紹介 -->
+        {% if user.bio %}
+        <div class="profile-section">
+            <div class="bio">
+                {# 一時的にmarkdownフィルターを無効化して動作確認 #}
+                {{ user.bio|safe }}
+                {# 本来の形 #}
+                {# {{ user.bio|markdown|safe }} #}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- カスタムフィールド -->
+        {% if user.custom_fields %}
+        <div class="profile-section">
+            <div class="custom-fields-view">
+                {% for field in user.custom_fields %}
+                <div class="custom-field-item">
+                    <div class="field-label">{{ field.label }}</div>
+                    <div class="field-value">{{ field.value }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- アクションボタン -->
+        <div class="profile-actions">
+            {% if current_user.is_authenticated and current_user.id == user.id %}
+                <a href="{{ url_for('profile.index') }}" class="button button-primary">
+                    <i data-feather="edit-2"></i>
+                    プロフィールを編集
+                </a>
+            {% endif %}
+            
+            <button type="button" class="button" onclick="copyProfileUrl()">
+                <i data-feather="link"></i>
+                プロフィールURLをコピー
+            </button>
         </div>
     </div>
 </div>
 {% endblock %}
 
+{% block styles %}
+<style>
+/* プロフィールビュー固有のスタイル */
+.profile-info {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.profile-name {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.profile-userid {
+    color: var(--text-light);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.profile-section {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+}
+
+.custom-fields-view {
+    display: grid;
+    gap: 1rem;
+}
+
+.custom-field-item {
+    background: var(--background);
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.field-label {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--text);
+}
+
+.field-value {
+    color: var(--text-light);
+}
+
+.profile-actions {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+</style>
+{% endblock %}
+
 {% block scripts %}
-<script src="https://unpkg.com/feather-icons"></script>
+{{ super() }}
 <script>
-    feather.replace();
+function copyProfileUrl() {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url).then(() => {
+        showMessage('プロフィールURLをコピーしました', 'success');
+    }).catch(() => {
+        showMessage('URLのコピーに失敗しました', 'error');
+    });
+}
 </script>
 {% endblock %} 

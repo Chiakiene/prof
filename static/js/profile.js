@@ -223,255 +223,176 @@ async function deleteBackgroundImage() {
     }
 }
 
-// 初期化
-document.addEventListener('DOMContentLoaded', () => {
-    initTabs();
-    updateFieldCount();
-    updateDesignPreview();
-    feather.replace();
-
-    // カラーピッカーのイベントリスナー
-    document.querySelectorAll('input[type="color"]').forEach(input => {
-        input.addEventListener('input', () => {
-            updateColorValue(input);
-            updateDesignPreview();  // 直接プレビューを更新
-        });
-    });
-
-    // 背景タイプのイベントリスナー
-    document.querySelectorAll('input[name="background_type"]').forEach(radio => {
-        radio.addEventListener('change', function() {
-            const colorOptions = document.querySelector('.color-options');
-            const imageOptions = document.querySelector('.image-options');
-            
-            if (this.value === 'color') {
-                colorOptions.style.display = 'block';
-                imageOptions.style.display = 'none';
-            } else {
-                colorOptions.style.display = 'none';
-                imageOptions.style.display = 'block';
-            }
-            
-            updateDesignPreview();
-        });
-    });
-
-    // 各種入力要素のイベントリスナー
-    const inputs = [
-        { id: 'background_opacity', event: 'input', suffix: '%' },
-        { id: 'font_size', event: 'input', suffix: 'px' },
-        { id: 'heading_size', event: 'input', suffix: 'px' },
-        { id: 'text_border_size', event: 'input', suffix: 'px' },
-        { id: 'text_border_color', event: 'input' },  // 文字枠の色を追加
-        { id: 'font_family', event: 'change' },
-        { id: 'background_image', event: 'change' }
-    ];
-
-    inputs.forEach(({ id, event, suffix }) => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.addEventListener(event, () => {
-                if (suffix) {
-                    const valueDisplay = document.getElementById(`${id}-value`);
-                    if (valueDisplay) {
-                        valueDisplay.textContent = element.value + suffix;
-                    }
-                }
-                // カラーピッカーの場合は値の表示も更新
-                if (element.type === 'color') {
-                    updateColorValue(element);
-                }
-                updateDesignPreview();
-            });
-        }
-    });
-
-    // 文字枠の有効/無効のイベントリスナー
-    document.querySelectorAll('input[name="text_border_enabled"]').forEach(radio => {
-        radio.addEventListener('change', function() {
-            const borderOptions = document.querySelector('.text-border-options');
-            const preview = document.getElementById('designPreview');
-            const previewHeading = preview.querySelector('h3');
-
-            if (this.value === 'true') {
-                borderOptions.style.display = 'block';
-                // 即座にプレビューを更新
-                updateDesignPreview();
-            } else {
-                borderOptions.style.display = 'none';
-                // 縁取りをすぐに解除
-                preview.style.textShadow = 'none';
-                if (previewHeading) {
-                    previewHeading.style.textShadow = 'none';
-                }
-                // プレビューを更新
-                updateDesignPreview();
-            }
-        });
-    });
-
-    // すべてのラジオボタンに即時更新を適用
-    document.querySelectorAll('input[type="radio"]').forEach(radio => {
-        radio.addEventListener('change', () => {
-            updateDesignPreview();
-        });
-    });
-
-    // アバターアップロード
-    const avatarUpload = document.getElementById('avatarUpload');
-    if (avatarUpload) {
-        avatarUpload.addEventListener('click', function() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.onchange = function(e) {
-                handleImageUpload(this, 'avatar');
-            };
-            input.click();
-        });
-    }
-
-    // フォームのバリデーション
-    const form = document.querySelector('.settings-form');
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            const username = document.getElementById('username');
-            if (username.value.length < 3) {
-                e.preventDefault();
-                alert('ユーザー名は3文字以上で入力してください');
-                username.focus();
-                return;
-            }
-            
-            // カスタムフィールドのバリデーション
-            const labels = document.getElementsByName('custom_labels[]');
-            const values = document.getElementsByName('custom_values[]');
-            for (let i = 0; i < labels.length; i++) {
-                if (labels[i].value && !values[i].value) {
-                    e.preventDefault();
-                    alert('項目名を入力した場合は、内容も入力してください');
-                    values[i].focus();
-                    return;
-                }
-            }
-        });
-    }
-
-    // 初期カウント更新
-    updateFieldCount();
+// メインのDOMContentLoadedイベントリスナー
+document.addEventListener('DOMContentLoaded', function() {
+    // アバターアップロード機能
+    initializeAvatarUpload();
+    
+    // パスワード表示切り替え
+    initializePasswordToggle();
+    
+    // 文字数カウント
+    initializeCharCount();
+    
+    // 折りたたみセクション
+    initializeCollapsible();
+    
+    // フォームバリデーション
+    initializeFormValidation();
+    
+    // カスタムフィールド
+    initializeCustomFields();
 });
 
-let cropper = null;
-let currentImageType = null;
+// アバターアップロード機能の初期化
+function initializeAvatarUpload() {
+    const avatarInput = document.getElementById('avatarInput');
+    const uploadButton = document.getElementById('uploadAvatar');
+    const cropModal = document.getElementById('cropModal');
+    const cropImage = document.getElementById('cropImage');
+    const avatarPreview = document.getElementById('avatarPreview');
+    
+    let cropper = null;
 
-document.addEventListener('DOMContentLoaded', function() {
-    // 要素の取得
-    const modal = document.getElementById('uploadModal');
-    const avatarUpload = document.getElementById('avatarUpload');
-    const imageInput = document.getElementById('imageInput');
-    const selectImage = document.getElementById('selectImage');
-    const preview = document.getElementById('preview');
-    const previewContainer = document.getElementById('previewContainer');
-    const uploadButton = document.getElementById('uploadImage');
-    
-    // フォームのバリデーション
-    const form = document.querySelector('.profile-form');
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            const username = document.getElementById('username');
-            if (username && username.value.length < 3) {
-                e.preventDefault();
-                showMessage('ユーザー名は3文字以上で入力してください', 'error');
-                username.focus();
-            }
-        });
-    }
-    
-    // 画像アップロード関連の処理
-    function initializeImageUpload() {
-        avatarUpload.addEventListener('click', () => modal.style.display = 'block');
-        document.querySelectorAll('.modal-close, #cancelUpload').forEach(button => {
-            button.addEventListener('click', closeModal);
-        });
-        selectImage.addEventListener('click', () => imageInput.click());
-        imageInput.addEventListener('change', handleImagePreview);
-        uploadButton.addEventListener('click', handleImageUpload);
-    }
-    
-    // プレビュー表示の処理
-    function handleImagePreview(e) {
-        const file = e.target.files[0];
-        if (file && file.type.startsWith('image/')) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.src = e.target.result;
-                previewContainer.style.display = 'block';
-                uploadButton.disabled = false;
-            };
-            reader.readAsDataURL(file);
-        }
-    }
-    
-    // 画像アップロードの処理
-    async function handleImageUpload() {
-        const file = imageInput.files[0];
+    // アップロードボタンのクリックイベント
+    uploadButton?.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('Upload button clicked'); // デバッグ用
+        avatarInput?.click();
+    });
+
+    // ファイル選択時のイベント
+    avatarInput?.addEventListener('change', function(e) {
+        console.log('File selected'); // デバッグ用
+        const file = e.target.files?.[0];
         if (!file) return;
-        
-        const formData = new FormData();
-        formData.append('image', file);
+
+        // ファイルサイズチェック
+        if (file.size > 5 * 1024 * 1024) {
+            showMessage('ファイルサイズは5MB以下にしてください', 'error');
+            return;
+        }
+
+        // ファイル形式チェック
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!allowedTypes.includes(file.type)) {
+            showMessage('JPG、PNG、GIF形式の画像のみアップロード可能です', 'error');
+            return;
+        }
+
+        // 画像プレビュー
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            console.log('File loaded'); // デバッグ用
+            if (cropImage && cropModal && e.target?.result) {
+                cropImage.src = e.target.result;
+                cropModal.style.display = 'block';
+
+                if (cropper) {
+                    cropper.destroy();
+                }
+                cropper = new Cropper(cropImage, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    autoCropArea: 1,
+                    background: false
+                });
+            }
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // モーダルを閉じる
+    document.querySelectorAll('.modal-close, #cancelCrop').forEach(button => {
+        button?.addEventListener('click', () => {
+            closeModal();
+        });
+    });
+
+    // クロップ画像を保存
+    document.getElementById('saveCrop')?.addEventListener('click', async function() {
+        if (!cropper) return;
         
         try {
-            const response = await fetch('/profile/upload_image', {
+            const canvas = cropper.getCroppedCanvas({
+                width: 800,
+                height: 800
+            });
+            
+            const blob = await new Promise(resolve => {
+                canvas.toBlob(resolve, 'image/jpeg', 0.85);
+            });
+            
+            const formData = new FormData();
+            formData.append('avatar', blob, 'avatar.jpg');
+            
+            const response = await fetch('/profile/avatar/upload', {
                 method: 'POST',
                 body: formData
             });
             
             const data = await response.json();
-            
             if (data.success) {
-                updateAvatar(data.url);
-                closeModal();
-                showMessage('プロフィール画像を更新しました', 'success');
+                updateAvatarImages(data.avatar_url);
+                showMessage(data.message, 'success');
             } else {
-                throw new Error(data.error);
+                showMessage(data.message, 'error');
             }
+            
+            closeModal();
+            
         } catch (error) {
-            showMessage('画像のアップロードに失敗しました', 'error');
+            console.error('アップロードエラー:', error);
+            showMessage('エラーが発生しました', 'error');
         }
-    }
-    
-    // アバター画像の更新
-    function updateAvatar(url) {
-        const avatar = document.querySelector('.avatar');
-        if (avatar) {
-            avatar.src = url;
-        }
-    }
-    
-    // モーダルを閉じる
+    });
+
+    // モーダルを閉じる関数
     function closeModal() {
-        modal.style.display = 'none';
-        previewContainer.style.display = 'none';
-        imageInput.value = '';
-        uploadButton.disabled = true;
+        if (cropModal) {
+            cropModal.style.display = 'none';
+        }
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
+        if (avatarInput) {
+            avatarInput.value = '';
+        }
     }
-    
-    // メッセージの表示
-    function showMessage(message, type = 'success') {
-        const flashContainer = document.createElement('div');
-        flashContainer.className = `flash flash-${type}`;
-        flashContainer.textContent = message;
-        
-        document.querySelector('.profile-container').insertAdjacentElement('afterbegin', flashContainer);
-        
-        setTimeout(() => {
-            flashContainer.remove();
-        }, 3000);
+
+    // アバター画像を更新する関数
+    function updateAvatarImages(newUrl) {
+        // プレビュー画像の更新
+        if (avatarPreview) {
+            if (avatarPreview.tagName.toLowerCase() === 'img') {
+                avatarPreview.src = newUrl;
+            } else {
+                const img = document.createElement('img');
+                img.src = newUrl;
+                img.alt = 'プロフィール画像';
+                img.id = 'avatarPreview';
+                img.className = 'avatar-large';
+                avatarPreview.parentNode.replaceChild(img, avatarPreview);
+            }
+        }
+
+        // ナビバーのアバター更新
+        const navAvatar = document.querySelector('.nav-avatar');
+        if (navAvatar) {
+            if (navAvatar.tagName.toLowerCase() === 'img') {
+                navAvatar.src = newUrl;
+            } else {
+                const img = document.createElement('img');
+                img.src = newUrl;
+                img.alt = 'プロフィール画像';
+                img.className = 'nav-avatar';
+                navAvatar.parentNode.replaceChild(img, navAvatar);
+            }
+        }
     }
-    
-    // 初期化
-    initializeImageUpload();
-});
+}
 
 // カスタムフィールドの管理
 document.addEventListener('DOMContentLoaded', function() {
@@ -562,8 +483,8 @@ function updateFieldOrder() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    // パスワード表示切り替え
+// パスワード表示切り替え
+function initializePasswordToggle() {
     document.querySelectorAll('.toggle-password').forEach(button => {
         button.addEventListener('click', function() {
             const input = this.parentElement.querySelector('input');
@@ -579,8 +500,10 @@ document.addEventListener('DOMContentLoaded', function() {
             feather.replace();
         });
     });
+}
 
-    // 文字数カウント
+// 文字数カウント
+function initializeCharCount() {
     const bioTextarea = document.getElementById('bio');
     const charCount = document.querySelector('.char-count');
     
@@ -596,32 +519,111 @@ document.addEventListener('DOMContentLoaded', function() {
     
     bioTextarea.addEventListener('input', updateCharCount);
     updateCharCount();
+}
 
-    // 折りたたみセクション
+// 折りたたみセクション
+function initializeCollapsible() {
     document.querySelectorAll('.collapsible-header').forEach(header => {
         header.addEventListener('click', function() {
             this.parentElement.classList.toggle('active');
         });
     });
+}
 
-    // フォームのバリデーション
+// フォームバリデーション
+function initializeFormValidation() {
     const form = document.querySelector('.profile-form');
-    form.addEventListener('submit', function(e) {
-        const newPassword = document.getElementById('new_password');
-        const confirmPassword = document.getElementById('confirm_password');
-        
-        if (newPassword.value || confirmPassword.value) {
-            if (newPassword.value !== confirmPassword.value) {
-                e.preventDefault();
-                showMessage('新しいパスワードが一致しません', 'error');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const newPassword = document.getElementById('new_password');
+            const confirmPassword = document.getElementById('confirm_password');
+            
+            if (newPassword.value || confirmPassword.value) {
+                if (newPassword.value !== confirmPassword.value) {
+                    e.preventDefault();
+                    showMessage('新しいパスワードが一致しません', 'error');
+                    return;
+                }
+                
+                if (!document.getElementById('current_password').value) {
+                    e.preventDefault();
+                    showMessage('現在のパスワードを入力してください', 'error');
+                    return;
+                }
+            }
+        });
+    }
+}
+
+// カスタムフィールドの管理
+function initializeCustomFields() {
+    const customFields = document.getElementById('customFields');
+    const addButton = document.getElementById('addField');
+    
+    // Sortable初期化
+    if (customFields) {
+        new Sortable(customFields, {
+            animation: 150,
+            handle: '.drag-handle',
+            ghostClass: 'dragging',
+            dragClass: 'dragging',
+            onEnd: function() {
+                updateFieldOrder();
+            }
+        });
+    }
+    
+    function createField(index) {
+        const field = document.createElement('div');
+        field.className = 'custom-field';
+        field.innerHTML = `
+            <div class="drag-handle">
+                <i data-feather="grip-vertical"></i>
+            </div>
+            <div class="field-inputs">
+                <div class="form-group">
+                    <input type="text" name="label_${index}" 
+                           placeholder="ラベル" maxlength="50">
+                </div>
+                <div class="form-group">
+                    <input type="text" name="value_${index}" 
+                           placeholder="値" maxlength="500">
+                </div>
+            </div>
+            <button type="button" class="button-icon remove-field" title="削除">
+                <i data-feather="trash-2"></i>
+            </button>
+        `;
+        return field;
+    }
+    
+    if (addButton) {
+        addButton.addEventListener('click', function() {
+            const fields = customFields.children;
+            if (fields.length >= 20) {
+                showMessage('カスタムフィールドは20個までです', 'error');
                 return;
             }
             
-            if (!document.getElementById('current_password').value) {
-                e.preventDefault();
-                showMessage('現在のパスワードを入力してください', 'error');
-                return;
+            const newField = createField(fields.length);
+            customFields.appendChild(newField);
+            feather.replace();
+            
+            if (fields.length >= 19) {
+                addButton.disabled = true;
             }
-        }
-    });
-}); 
+        });
+    }
+    
+    if (customFields) {
+        customFields.addEventListener('click', function(e) {
+            if (e.target.closest('.remove-field')) {
+                e.target.closest('.custom-field').remove();
+                if (addButton) {
+                    addButton.disabled = false;
+                }
+                updateFieldOrder();
+            }
+        });
+    }
+} 

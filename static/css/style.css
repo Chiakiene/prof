@@ -785,4 +785,203 @@ body {
 
 .custom-field.drag-over {
     border-top: 2px solid var(--primary);
+}
+
+/* アバターセクション */
+.avatar-section {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.avatar-container {
+    position: relative;
+    display: inline-block;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.avatar-large {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.avatar-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.avatar-container:hover .avatar-overlay {
+    opacity: 1;
+}
+
+.avatar-overlay .button {
+    color: white;
+    background: transparent;
+    border: 2px solid white;
+}
+
+/* クロップモーダル */
+.crop-container {
+    max-width: 100%;
+    height: 400px;
+    background: #000;
+    overflow: hidden;
+}
+
+#cropImage {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* デフォルトアバター */
+.default-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+}
+
+/* サイズバリエーション */
+.default-avatar.avatar-large {
+    font-size: 4rem;
+    letter-spacing: 2px;
+}
+
+.default-avatar.nav-avatar {
+    font-size: 1rem;
+}
+
+/* 装飾エフェクト */
+.default-avatar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg,
+        rgba(255,255,255,0.15) 0%,
+        rgba(255,255,255,0.05) 100%);
+}
+
+.default-avatar::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+        circle at center,
+        rgba(255,255,255,0.2) 0%,
+        rgba(255,255,255,0) 50%
+    );
+}
+
+/* アバター共通スタイル */
+.avatar-large,
+.nav-avatar,
+.default-avatar {
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.avatar-large {
+    width: 150px;
+    height: 150px;
+}
+
+.nav-avatar {
+    width: 32px;
+    height: 32px;
+}
+
+/* アバターコンテナ */
+.avatar-container {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.avatar-container.nav-size {
+    width: 32px;
+    height: 32px;
+}
+
+/* アバターオーバーレイ */
+.avatar-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(2px);
+}
+
+.avatar-container:hover .avatar-overlay {
+    opacity: 1;
+}
+
+.avatar-overlay .button {
+    color: white;
+    background: transparent;
+    border: 2px solid rgba(255,255,255,0.8);
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.avatar-overlay .button:hover {
+    background: white;
+    color: var(--primary);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.avatar-overlay .button i {
+    transition: transform 0.3s ease;
+}
+
+.avatar-overlay .button:hover i {
+    transform: scale(1.1);
+}
+
+/* アバターのサイズバリエーション */
+.avatar-small {
+    width: 24px;
+    height: 24px;
+}
+
+.avatar-medium {
+    width: 40px;
+    height: 40px;
 } 

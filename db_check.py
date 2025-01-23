@@ -1,7 +1,8 @@
 from flask import Flask
-from models import db, User
+from models import db, User, CustomField
 from datetime import datetime
 import os
+from sqlalchemy import inspect
 
 def check_db():
     app = Flask(__name__)
@@ -56,6 +57,72 @@ def check_upload_directories():
     else:
         print("ディレクトリが存在しません")
 
+def check_table_columns():
+    """データベースのテーブルとカラムを確認"""
+    inspector = inspect(db.engine)
+    
+    print("\n=== データベース構造 ===\n")
+    
+    for table_name in inspector.get_table_names():
+        print(f"\n📋 テーブル: {table_name}")
+        print("─" * 50)
+        
+        # カラム情報を取得
+        columns = inspector.get_columns(table_name)
+        for column in columns:
+            nullable = "NULL可" if column['nullable'] else "NULL不可"
+            default = f"デフォルト: {column['default']}" if column['default'] is not None else ""
+            
+            print(f"  ├─ {column['name']}")
+            print(f"  │  型: {column['type']}")
+            print(f"  │  {nullable} {default}")
+        
+        # 外部キー制約を取得
+        foreign_keys = inspector.get_foreign_keys(table_name)
+        if foreign_keys:
+            print("\n  🔗 外部キー:")
+            for fk in foreign_keys:
+                print(f"  ├─ {fk['constrained_columns']} -> {fk['referred_table']}.{fk['referred_columns']}")
+        
+        # インデックスを取得
+        indexes = inspector.get_indexes(table_name)
+        if indexes:
+            print("\n  📑 インデックス:")
+            for idx in indexes:
+                unique = "ユニーク" if idx['unique'] else "非ユニーク"
+                print(f"  ├─ {idx['name']} ({unique})")
+                print(f"  │  カラム: {', '.join(idx['column_names'])}")
+
+def check_model_columns():
+    """Modelで定義されているカラムを確認"""
+    models = [User, CustomField]
+    
+    print("\n=== Model定義 ===\n")
+    
+    for model in models:
+        print(f"\n📝 Model: {model.__name__}")
+        print("─" * 50)
+        
+        for column in model.__table__.columns:
+            nullable = "NULL可" if column.nullable else "NULL不可"
+            default = f"デフォルト: {column.default}" if column.default is not None else ""
+            
+            print(f"  ├─ {column.name}")
+            print(f"  │  型: {column.type}")
+            print(f"  │  {nullable} {default}")
+        
+        # リレーションシップを取得
+        if hasattr(model, '__mapper__'):
+            relationships = model.__mapper__.relationships
+            if relationships:
+                print("\n  🔗 リレーションシップ:")
+                for name, rel in relationships.items():
+                    print(f"  ├─ {name} -> {rel.target}")
+
 if __name__ == '__main__':
     check_db()
-    check_upload_directories() 
+    check_upload_directories()
+    with app.app_context():
+        print("\n🔍 データベース構造を確認中...\n")
+        check_table_columns()
+        check_model_columns() 

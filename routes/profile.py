@@ -5,13 +5,45 @@ from werkzeug.security import check_password_hash
 import os
 from datetime import datetime
 from models import db, User, CustomField
+from PIL import Image
 
 profile_bp = Blueprint('profile', __name__)
 
 def allowed_file(filename):
-    """アップロードされたファイルが許可された拡張子か確認"""
+    """許可されたファイル拡張子かチェック"""
     return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
+           filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}
+
+def save_avatar(file):
+    """アバター画像を保存"""
+    if not file:
+        return None
+    
+    try:
+        # 画像を開いてPILで処理
+        image = Image.open(file)
+        
+        # JPEGに変換（透過がある場合は白背景）
+        if image.mode in ('RGBA', 'LA'):
+            background = Image.new('RGB', image.size, 'white')
+            background.paste(image, mask=image.split()[-1])
+            image = background
+        
+        # アスペクト比を維持しながら最大サイズに収める
+        image.thumbnail((800, 800))
+        
+        # ファイル名を生成
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        filename = f"avatar_{timestamp}.jpg"
+        filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+        
+        # JPEG形式で保存
+        image.save(filepath, 'JPEG', quality=85, optimize=True)
+        return filename
+        
+    except Exception as e:
+        current_app.logger.error(f"画像保存エラー: {e}")
+        return None
 
 @profile_bp.route('/')
 @login_required
@@ -111,42 +143,46 @@ def update():
 
     return redirect(url_for('profile.index'))
 
-@profile_bp.route('/upload_image', methods=['POST'])
+@profile_bp.route('/avatar/upload', methods=['POST'])
 @login_required
-def upload_image():
-    """プロフィール画像をアップロード"""
-    if 'image' not in request.files:
-        return jsonify({'success': False, 'error': 'No file uploaded'}), 400
-        
-    file = request.files['image']
-    if not file or not allowed_file(file.filename):
-        return jsonify({'success': False, 'error': 'Invalid file type'}), 400
+def upload_avatar():
+    """アバター画像をアップロード"""
+    if 'avatar' not in request.files:
+        return jsonify({'success': False, 'message': '画像が選択されていません'})
+    
+    file = request.files['avatar']
+    if file.filename == '':
+        return jsonify({'success': False, 'message': '画像が選択されていません'})
+    
+    if not allowed_file(file.filename):
+        return jsonify({'success': False, 'message': '許可されていないファイル形式です'})
     
     try:
-        # ファイル名を安全に保存
-        filename = secure_filename(f"{current_user.id}_avatar_{int(datetime.utcnow().timestamp())}.jpg")
-        filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-        
-        # 古い画像を削除
+        # 古いアバター画像を削除
         if current_user.avatar_url:
-            old_file = os.path.join(current_app.root_path, 'static', current_user.avatar_url)
-            if os.path.exists(old_file):
-                os.remove(old_file)
+            old_avatar = os.path.join(current_app.config['UPLOAD_FOLDER'], 
+                                    current_user.avatar_url)
+            if os.path.exists(old_avatar):
+                os.remove(old_avatar)
         
-        # 新しい画像を保存
-        file.save(filepath)
-        current_user.avatar_url = f'uploads/{filename}'
+        # 新しいアバター画像を保存
+        filename = save_avatar(file)
+        if not filename:
+            return jsonify({'success': False, 'message': '画像の保存に失敗しました'})
+        
+        # データベースを更新
+        current_user.avatar_url = filename
         db.session.commit()
         
         return jsonify({
             'success': True,
-            'url': url_for('static', filename=f'uploads/{filename}')
+            'message': 'アバター画像を更新しました',
+            'avatar_url': url_for('static', filename=f'uploads/{filename}')
         })
         
     except Exception as e:
-        db.session.rollback()
-        current_app.logger.error(f'Image upload error: {str(e)}')
-        return jsonify({'success': False, 'error': str(e)}), 500
+        current_app.logger.error(f"アバターアップロードエラー: {e}")
+        return jsonify({'success': False, 'message': 'エラーが発生しました'})
 
 @profile_bp.route('/<username>')
 def view(username):

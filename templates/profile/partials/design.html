@@ -1,0 +1,123 @@
+<div class="tab-content" id="design-tab">
+    <form method="POST" class="settings-form">
+        <input type="hidden" name="form_type" value="design">
+        
+        <!-- プレビュー -->
+        <div class="preview-section">
+            <h2>プレビュー</h2>
+            <div class="design-preview" id="designPreview">
+                <div class="preview-content">
+                    <h1>{{ user.username }}</h1>
+                    <p>{{ user.bio or 'ここに自己紹介文が表示されます' }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 背景設定 -->
+        <div class="settings-section">
+            <h2>背景設定</h2>
+            
+            <div class="form-group">
+                <label>背景タイプ</label>
+                <div class="radio-group">
+                    <input type="radio" id="bg_type_color" name="background_type" value="color"
+                           {% if not user.design or user.design.background_type == 'color' %}checked{% endif %}>
+                    <label for="bg_type_color">カラー</label>
+                    
+                    <input type="radio" id="bg_type_image" name="background_type" value="image"
+                           {% if user.design and user.design.background_type == 'image' %}checked{% endif %}>
+                    <label for="bg_type_image">画像</label>
+                </div>
+            </div>
+
+            <div class="form-group" id="backgroundColorGroup">
+                <label for="background_color">背景色</label>
+                <div class="color-picker-wrapper">
+                    <input type="color" id="background_color" name="background_color"
+                           value="{{ user.design.background_color if user.design else '#ffffff' }}">
+                    <span class="color-value">{{ user.design.background_color if user.design else '#ffffff' }}</span>
+                </div>
+            </div>
+
+            <div class="form-group" id="backgroundImageGroup">
+                <label>背景画像</label>
+                {% if user.design and user.design.background_image %}
+                    <div class="background-preview">
+                        <img src="{{ url_for('static', filename=user.design.background_image) }}" alt="背景画像">
+                        <button type="button" class="delete-image" onclick="deleteBackgroundImage()">
+                            <i data-feather="trash-2"></i>
+                        </button>
+                    </div>
+                {% else %}
+                    <div class="upload-area" id="backgroundUpload">
+                        <div class="upload-placeholder">
+                            <i data-feather="image"></i>
+                            <p>クリックまたはドラッグ&ドロップで画像をアップロード</p>
+                            <small>推奨サイズ: 1920x1080px以上</small>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="background_opacity">背景の透過度</label>
+                <div class="range-control">
+                    <input type="range" id="background_opacity" name="background_opacity"
+                           min="0" max="100" step="1"
+                           value="{{ (user.design.background_opacity * 100)|int if user.design else 100 }}">
+                    <span class="range-value">{{ (user.design.background_opacity * 100)|int if user.design else 100 }}%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- フォント設定 -->
+        <div class="settings-section">
+            <h2>フォント設定</h2>
+            
+            <div class="form-group">
+                <label for="font_family">フォント</label>
+                <select id="font_family" name="font_family">
+                    <option value="'Noto Sans JP', sans-serif"
+                            {% if not user.design or user.design.font_family == "'Noto Sans JP', sans-serif" %}selected{% endif %}>
+                        Noto Sans JP
+                    </option>
+                    <option value="'M PLUS 1p', sans-serif"
+                            {% if user.design and user.design.font_family == "'M PLUS 1p', sans-serif" %}selected{% endif %}>
+                        M PLUS 1p
+                    </option>
+                    <option value="'Kosugi Maru', sans-serif"
+                            {% if user.design and user.design.font_family == "'Kosugi Maru', sans-serif" %}selected{% endif %}>
+                        Kosugi Maru
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="font_size">文字サイズ</label>
+                <div class="range-control">
+                    <input type="range" id="font_size" name="font_size"
+                           min="12" max="24" step="1"
+                           value="{{ user.design.font_size if user.design else 16 }}">
+                    <span class="range-value">{{ user.design.font_size if user.design else 16 }}px</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="text_color">文字色</label>
+                <div class="color-picker-wrapper">
+                    <input type="color" id="text_color" name="text_color"
+                           value="{{ user.design.text_color if user.design else '#000000' }}">
+                    <span class="color-value">{{ user.design.text_color if user.design else '#000000' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 保存ボタン -->
+        <div class="form-actions">
+            <button type="submit" class="button button-primary">
+                <i data-feather="save"></i>
+                保存
+            </button>
+        </div>
+    </form>
+</div> 

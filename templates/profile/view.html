@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}{{ user.username }}のプロフィール{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-card">
+        <!-- プロフィールヘッダー -->
+        <div class="profile-header">
+            <div class="avatar-container">
+                {% if user.avatar_url %}
+                    <img src="{{ url_for('static', filename=user.avatar_url) }}" 
+                         alt="{{ user.username }}" 
+                         class="avatar">
+                {% else %}
+                    <i data-feather="user" class="avatar-placeholder"></i>
+                {% endif %}
+            </div>
+            <h1>{{ user.username }}</h1>
+            
+            {% if user.bio %}
+                <p class="bio">{{ user.bio }}</p>
+            {% endif %}
+            
+            <div class="profile-meta">
+                {% if user.location %}
+                    <div class="meta-item">
+                        <i data-feather="map-pin"></i>
+                        <span>{{ user.location }}</span>
+                    </div>
+                {% endif %}
+                
+                {% if user.website %}
+                    <div class="meta-item">
+                        <i data-feather="link"></i>
+                        <a href="{{ user.website }}" target="_blank" rel="noopener">
+                            {{ user.website|replace('https://', '')|replace('http://', '') }}
+                        </a>
+                    </div>
+                {% endif %}
+                
+                <div class="meta-item">
+                    <i data-feather="calendar"></i>
+                    <span>{{ user.created_at.strftime('%Y年%m月') }}に登録</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/feather-icons"></script>
+<script>
+    feather.replace();
+</script>
+{% endblock %} 

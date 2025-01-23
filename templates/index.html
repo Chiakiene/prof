@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ホーム</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>ようこそ</h1>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% if current_user.is_authenticated %}
+            <div class="welcome-message">
+                <p>こんにちは、{{ current_user.username }}さん！</p>
+            </div>
+            <div class="button-group">
+                <a href="{{ url_for('profile') }}" class="button primary">プロフィール</a>
+                <a href="{{ url_for('logout') }}" class="button secondary">ログアウト</a>
+            </div>
+        {% else %}
+            <div class="welcome-message">
+                <p>アカウントをお持ちの方はログイン、<br>初めての方は新規登録をしてください。</p>
+            </div>
+            
+            <form method="POST" action="{{ url_for('index') }}">
+                <div class="form-group">
+                    <label for="username">ユーザー名</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">パスワード</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="form-group remember-me">
+                    <input type="checkbox" id="remember" name="remember">
+                    <label for="remember">ログイン状態を保持する</label>
+                </div>
+                <button type="submit">ログイン</button>
+            </form>
+            
+            <div class="social-login">
+                <a href="{{ url_for('google_login') }}" class="social-button google">
+                    Googleでログイン
+                </a>
+                <a href="{{ url_for('github_login') }}" class="social-button github">
+                    GitHubでログイン
+                </a>
+            </div>
+            
+            <div class="nav">
+                <a href="{{ url_for('register') }}">新規登録はこちら</a>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html> 

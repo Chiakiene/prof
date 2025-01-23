@@ -1,0 +1,86 @@
+<div class="tab-content active" id="basic-tab">
+    <div class="card">
+        <h2>基本情報</h2>
+        <!-- ユーザーID -->
+        <div class="form-group">
+            <label for="user_id">ユーザーID</label>
+            <input type="text" id="user_id" name="user_id" 
+                   value="{{ current_user.user_id }}" 
+                   required maxlength="20" 
+                   pattern="[a-zA-Z0-9]+"
+                   title="半角英数字20文字以内で入力してください">
+            <small>半角英数字20文字以内で入力してください</small>
+        </div>
+
+        <!-- ユーザー名 -->
+        <div class="form-group">
+            <label for="username">ユーザー名</label>
+            <input type="text" id="username" name="username" 
+                   value="{{ current_user.username }}" 
+                   required minlength="3" maxlength="20">
+            <small>3文字以上20文字以内で入力してください</small>
+        </div>
+
+        <!-- メールアドレス -->
+        <div class="form-group">
+            <label for="email">メールアドレス</label>
+            <input type="email" id="email" name="email" 
+                   value="{{ current_user.email }}" required>
+        </div>
+
+        <!-- 自己紹介 -->
+        <div class="form-group">
+            <label for="bio">自己紹介</label>
+            <textarea id="bio" name="bio" rows="4" 
+                      maxlength="1000">{{ current_user.bio or '' }}</textarea>
+            <small>1000文字以内で入力してください</small>
+        </div>
+
+        <!-- 場所 -->
+        <div class="form-group">
+            <label for="location">場所</label>
+            <input type="text" id="location" name="location" 
+                   value="{{ current_user.location or '' }}">
+        </div>
+
+        <!-- Webサイト -->
+        <div class="form-group">
+            <label for="website">Webサイト</label>
+            <input type="url" id="website" name="website" 
+                   value="{{ current_user.website or '' }}">
+        </div>
+
+        <!-- カスタムフィールド -->
+        <div class="custom-fields">
+            <h3>追加項目 <span class="field-count">(<span id="field-count">0</span>/20)</span></h3>
+            <div id="custom-fields-container">
+                {% for field in current_user.custom_fields %}
+                <div class="form-group custom-field">
+                    <div class="custom-field-header">
+                        <input type="text" name="custom_labels[]" 
+                               value="{{ field.label }}" 
+                               placeholder="項目名" 
+                               maxlength="30">
+                        <button type="button" class="remove-field" 
+                                onclick="removeField(this)" 
+                                title="削除">×</button>
+                    </div>
+                    <div class="custom-field-input">
+                        <input type="text" name="custom_values[]" 
+                               value="{{ field.value }}" 
+                               placeholder="内容" 
+                               maxlength="200"
+                               onchange="checkForUrl(this)">
+                        <div class="url-preview"></div>
+                    </div>
+                    <input type="hidden" name="custom_ids[]" value="{{ field.id }}">
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" class="add-field-button" onclick="addNewField()">
+                <i data-feather="plus-circle"></i>
+                項目を追加
+            </button>
+        </div>
+    </div>
+</div> 

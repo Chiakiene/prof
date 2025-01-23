@@ -1,0 +1,26 @@
+<div class="profile-header">
+    <div class="profile-image">
+        {% if user.avatar_url %}
+            <img src="{{ url_for('static', filename=user.avatar_url) }}" alt="プロフィール画像">
+        {% else %}
+            <div class="avatar-placeholder">{{ user.username[0]|upper }}</div>
+        {% endif %}
+        <button type="button" class="image-upload-button" id="avatarUpload">
+            <i data-feather="camera"></i>
+        </button>
+    </div>
+    
+    <div class="profile-meta">
+        <h1>{{ user.username }}</h1>
+        <div class="profile-url">
+            <input type="text" readonly value="{{ url_for('profile.view', username=user.username, _external=True) }}">
+            <button type="button" class="copy-button" onclick="copyProfileUrl()">
+                <i data-feather="copy"></i>
+            </button>
+        </div>
+        <a href="{{ url_for('profile.view', username=user.username) }}" class="view-profile-button">
+            <i data-feather="external-link"></i>
+            プロフィールを表示
+        </a>
+    </div>
+</div> 

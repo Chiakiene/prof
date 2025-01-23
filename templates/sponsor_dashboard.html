@@ -1,0 +1,161 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="sponsor-dashboard">
+    <!-- 統計概要 -->
+    <div class="stats-overview">
+        <div class="stat-card">
+            <h3>総スポンサー数</h3>
+            <div class="stat-value">{{ stats.total_sponsors }}</div>
+            <div class="stat-trend {% if stats.sponsor_growth > 0 %}positive{% else %}negative{% endif %}">
+                {{ stats.sponsor_growth }}% 先月比
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <h3>月間収入</h3>
+            <div class="stat-value">¥{{ stats.monthly_income | number_format }}</div>
+            <div class="stat-trend {% if stats.income_growth > 0 %}positive{% else %}negative{% endif %}">
+                {{ stats.income_growth }}% 先月比
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <h3>平均継続期間</h3>
+            <div class="stat-value">{{ stats.avg_duration }}ヶ月</div>
+        </div>
+    </div>
+
+    <!-- スポンサー一覧 -->
+    <div class="sponsors-list card">
+        <h2>スポンサー一覧</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>スポンサー</th>
+                        <th>プラン</th>
+                        <th>開始日</th>
+                        <th>支援額</th>
+                        <th>ステータス</th>
+                        <th>アクション</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sponsor in sponsors %}
+                    <tr>
+                        <td>
+                            <div class="sponsor-info">
+                                <img src="{{ sponsor.user.avatar_url }}" alt="avatar" class="sponsor-avatar">
+                                <div>
+                                    <div class="sponsor-name">{{ sponsor.user.username }}</div>
+                                    <div class="sponsor-email">{{ sponsor.user.email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ sponsor.tier.name }}</td>
+                        <td>{{ sponsor.started_at.strftime('%Y/%m/%d') }}</td>
+                        <td>¥{{ sponsor.tier.price | number_format }}/月</td>
+                        <td>
+                            <span class="status-badge {{ sponsor.status }}">
+                                {{ sponsor.status }}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="action-button" onclick="showSponsorDetails({{ sponsor.id }})">
+                                詳細
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 収益グラフ -->
+    <div class="revenue-chart card">
+        <h2>収益推移</h2>
+        <div class="chart-container">
+            <canvas id="revenueChart"></canvas>
+        </div>
+    </div>
+
+    <!-- プラン別統計 -->
+    <div class="tier-stats card">
+        <h2>プラン別統計</h2>
+        <div class="tier-stats-grid">
+            {% for tier in tiers %}
+            <div class="tier-stat-card">
+                <h3>{{ tier.name }}</h3>
+                <div class="tier-stat-content">
+                    <div class="tier-stat-item">
+                        <span class="label">スポンサー数</span>
+                        <span class="value">{{ tier.sponsor_count }}</span>
+                    </div>
+                    <div class="tier-stat-item">
+                        <span class="label">月間収入</span>
+                        <span class="value">¥{{ tier.monthly_income | number_format }}</span>
+                    </div>
+                    <div class="tier-stat-item">
+                        <span class="label">継続率</span>
+                        <span class="value">{{ tier.retention_rate }}%</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- スポンサー詳細モーダル -->
+<div id="sponsorModal" class="modal">
+    <div class="modal-content">
+        <h2>スポンサー詳細</h2>
+        <div class="sponsor-details">
+            <!-- スポンサーの詳細情報 -->
+        </div>
+        <div class="modal-actions">
+            <button onclick="sendMessage()">メッセージを送る</button>
+            <button onclick="manageSpecialBenefits()">特典を管理</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// 収益グラフの描画
+const ctx = document.getElementById('revenueChart').getContext('2d');
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: {{ chart_data.labels | tojson }},
+        datasets: [{
+            label: '月間収入',
+            data: {{ chart_data.values | tojson }},
+            borderColor: '#4a90e2',
+            tension: 0.4
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false
+    }
+});
+
+// その他のインタラクション機能
+function showSponsorDetails(sponsorId) {
+    // スポンサー詳細モーダルの表示処理
+}
+
+function sendMessage() {
+    // メッセージ送信機能
+}
+
+function manageSpecialBenefits() {
+    // 特典管理機能
+}
+</script>
+{% endblock %} 

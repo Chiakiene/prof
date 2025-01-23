@@ -1,0 +1,1048 @@
+/* Google Fontsのインポート */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap');
+
+/* 基本設定 */
+:root {
+    /* カラー */
+    --primary: #3b82f6;
+    --primary-hover: #2563eb;
+    --text: #1f2937;
+    --text-secondary: #4b5563;
+    --background: #f9fafb;
+    --surface: #ffffff;
+    --border: #e5e7eb;
+    --error: #ef4444;
+    --success: #10b981;
+    
+    /* シャドウ */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* 基本レイアウト */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--background);
+    color: var(--text);
+    line-height: 1.5;
+}
+
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+/* カード */
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+/* タブ */
+.tab-menu {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.5rem;
+}
+
+.tab-button {
+    padding: 0.75rem 1.5rem;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-weight: 500;
+    position: relative;
+}
+
+.tab-button.active {
+    color: var(--primary);
+}
+
+.tab-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: -0.5rem;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--primary);
+}
+
+/* フォーム要素 */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text);
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    transition: all 0.2s ease;
+}
+
+.form-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    outline: none;
+}
+
+.form-error {
+    color: var(--error);
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+/* ボタン */
+.button {
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.button-primary {
+    background: var(--primary);
+    color: white;
+    border: none;
+}
+
+.button-primary:hover {
+    background: var(--primary-hover);
+}
+
+/* プレビュー */
+.design-preview {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    background: var(--surface);
+}
+
+/* トリミングモーダル */
+.trim-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 1000;
+    overflow: auto;
+}
+
+.trim-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.trim-container {
+    background: var(--surface);
+    padding: 2rem;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: var(--shadow);
+}
+
+/* トリミングエリア */
+.trim-area {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    margin: 1rem 0;
+    overflow: hidden;
+    background: #f1f1f1;
+    border-radius: 8px;
+}
+
+.trim-area img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* トリミングコントロール */
+.trim-controls {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+}
+
+.trim-controls button {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.trim-save {
+    background: var(--primary);
+    color: white;
+    border: none;
+}
+
+.trim-save:hover {
+    background: var(--primary-hover);
+}
+
+.trim-cancel {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+.trim-cancel:hover {
+    background: var(--background);
+}
+
+/* ズームコントロール */
+.zoom-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.zoom-slider {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.zoom-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--primary);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.zoom-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--primary);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+}
+
+/* アバターアップロード */
+.avatar-upload {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+}
+
+.avatar-upload img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+}
+
+.upload-button {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    background: var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+}
+
+.upload-button:hover {
+    background: var(--primary-hover);
+}
+
+/* ファイル入力を非表示 */
+.file-input {
+    display: none;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    .tab-menu {
+        flex-direction: column;
+        gap: 0;
+    }
+    
+    .tab-button {
+        width: 100%;
+        text-align: left;
+    }
+
+    .trim-container {
+        padding: 1rem;
+    }
+
+    .trim-area {
+        height: 300px;
+    }
+
+    .trim-controls {
+        flex-direction: column;
+    }
+}
+
+/* 共通のモーダルスタイル */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 1000;
+    overflow: auto;
+}
+
+.modal-overlay.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-container {
+    background: var(--surface);
+    padding: 2rem;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 800px;
+    box-shadow: var(--shadow);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+/* アバタートリミング */
+.avatar-trim-area {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    margin: 1rem 0;
+    overflow: hidden;
+    background: #f1f1f1;
+    border-radius: 8px;
+}
+
+.avatar-trim-area .cropper-view-box {
+    border-radius: 50%;
+}
+
+/* 背景画像トリミング */
+.background-trim-area {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    margin: 1rem 0;
+    overflow: hidden;
+    background: #f1f1f1;
+    border-radius: 8px;
+}
+
+/* アップロードエリア */
+.upload-area {
+    position: relative;
+    width: 100%;
+    min-height: 200px;
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 2rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.upload-area:hover {
+    border-color: var(--primary);
+    background: var(--background);
+}
+
+.upload-area.drag-over {
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+
+.upload-icon {
+    font-size: 2rem;
+    color: var(--text-secondary);
+}
+
+.upload-text {
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+/* トリミングコントロール */
+.trim-controls {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+}
+
+/* ズームとリセットコントロール */
+.image-controls {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.zoom-controls {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.control-button {
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    transition: all 0.2s ease;
+}
+
+.control-button:hover {
+    background: var(--background);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* プレビュー */
+.preview-container {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+}
+
+.preview-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+}
+
+.avatar-preview {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid var(--border);
+}
+
+.background-preview {
+    width: 100%;
+    height: 120px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid var(--border);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .modal-container {
+        padding: 1rem;
+        margin: 1rem;
+    }
+
+    .avatar-trim-area,
+    .background-trim-area {
+        height: 300px;
+    }
+
+    .trim-controls {
+        flex-direction: column;
+    }
+
+    .image-controls {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .zoom-controls {
+        width: 100%;
+    }
+}
+
+/* プロフィール画像 */
+.profile-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 auto 1.5rem;
+    border: 2px solid var(--border);
+}
+
+.profile-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* フラッシュメッセージ */
+.flash {
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+}
+
+.flash-success {
+    background: var(--success);
+    color: white;
+}
+
+.flash-error {
+    background: var(--error);
+    color: white;
+}
+
+/* プロフィール設定ページのスタイル */
+.profile-container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+/* タブコンテンツ */
+.tab-content {
+    display: none;
+    margin-top: 2rem;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* 設定フォーム */
+.settings-form {
+    background: var(--surface);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    padding: 2rem;
+}
+
+.settings-section {
+    margin-bottom: 3rem;
+}
+
+.settings-section:last-child {
+    margin-bottom: 2rem;
+}
+
+.settings-section h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+}
+
+/* フォーム要素 */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-text {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+/* カスタムフィールド */
+.section-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.section-header h2 {
+    margin-bottom: 0;
+    margin-right: 0.5rem;
+}
+
+.field-counter {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.add-field-button {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--primary-color);
+    border-radius: 6px;
+    color: var(--primary-color);
+    background: transparent;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.add-field-button:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.custom-field {
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.field-header {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.remove-field {
+    padding: 0.25rem;
+    border: none;
+    background: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.remove-field:hover {
+    color: #ef4444;
+}
+
+/* フォームアクション */
+.form-actions {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    text-align: right;
+}
+
+.form-actions .button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+}
+
+/* アイコン */
+.feather {
+    width: 1em;
+    height: 1em;
+    stroke-width: 2;
+    stroke: currentColor;
+    fill: none;
+}
+
+/* デザイン設定タブのスタイル */
+.preview-section {
+    margin-bottom: 3rem;
+}
+
+.design-preview {
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.preview-content {
+    position: relative;
+    z-index: 1;
+}
+
+/* 背景設定 */
+.radio-group {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.radio-group input[type="radio"] {
+    display: none;
+}
+
+.radio-group label {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.radio-group input[type="radio"]:checked + label {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* カラーピッカー */
+.color-picker-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.color-picker-wrapper input[type="color"] {
+    -webkit-appearance: none;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.color-picker-wrapper input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.color-picker-wrapper input[type="color"]::-webkit-color-swatch {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+}
+
+.color-value {
+    font-family: monospace;
+    color: var(--text-secondary);
+}
+
+/* レンジスライダー */
+.range-control {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.range-control input[type="range"] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+}
+
+.range-control input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.range-value {
+    min-width: 48px;
+    text-align: right;
+    color: var(--text-secondary);
+}
+
+/* 画像アップロードエリア */
+.upload-area {
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.upload-area:hover {
+    border-color: var(--primary-color);
+    background: var(--surface-alt);
+}
+
+.upload-placeholder {
+    color: var(--text-secondary);
+}
+
+.upload-placeholder i {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 1rem;
+}
+
+.upload-placeholder p {
+    margin-bottom: 0.5rem;
+}
+
+.upload-placeholder small {
+    font-size: 0.875rem;
+}
+
+/* 背景画像プレビュー */
+.background-preview {
+    position: relative;
+}
+
+.background-preview img {
+    width: 100%;
+    height: auto;
+    border-radius: 6px;
+}
+
+.delete-image {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.delete-image:hover {
+    background: rgba(239, 68, 68, 0.8);
+}
+
+/* フォント選択 */
+select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* モーダル */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--surface);
+    border-radius: 8px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+.modal-body {
+    padding: 1rem;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.modal-footer {
+    padding: 1rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+/* トリミングエリア */
+.crop-area {
+    width: 100%;
+    height: 400px;
+    background: #000;
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+
+.crop-area img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* トリミングコントロール */
+.trim-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.zoom-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.zoom-controls input[type="range"] {
+    flex: 1;
+}
+
+.image-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.trim-controls button {
+    padding: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.trim-controls button:hover {
+    background: var(--surface-hover);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 640px) {
+    .modal-content {
+        width: 95%;
+    }
+
+    .crop-area {
+        height: 300px;
+    }
+
+    .trim-controls {
+        flex-direction: column;
+    }
+
+    .image-controls {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .zoom-controls {
+        width: 100%;
+    }
+} 

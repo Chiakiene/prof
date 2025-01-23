@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}プロフィール設定{% endblock %}
+
+{% block styles %}
+<style>
+    :root {
+        {% if user.design %}
+            --preview-font-family: {{ user.design.font_family }};
+            --preview-text-color: {{ user.design.text_color }};
+            {% if user.design.background_type == 'color' %}
+                --preview-background-color: {{ user.design.background_color }};
+                --preview-background-image: none;
+            {% else %}
+                --preview-background-image: url({{ url_for('static', filename=user.design.background_image) }});
+            {% endif %}
+            --preview-opacity: {{ user.design.background_opacity }};
+        {% endif %}
+    }
+</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=M+PLUS+1p:wght@400;500;700&family=Kosugi+Maru&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <!-- プロフィールヘッダー -->
+    {% include 'profile/partials/header.html' %}
+
+    <!-- タブメニュー -->
+    {% include 'profile/partials/tabs.html' %}
+
+    <!-- タブコンテンツ -->
+    <div class="tab-contents">
+        <!-- 基本情報タブ -->
+        {% include 'profile/partials/basic.html' %}
+
+        <!-- デザイン設定タブ -->
+        {% include 'profile/partials/design.html' %}
+    </div>
+</div>
+
+<!-- 画像トリミングモーダル -->
+{% include 'profile/partials/crop_modal.html' %}
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/feather-icons"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+<script src="{{ url_for('static', filename='js/profile.js') }}"></script>
+<script src="{{ url_for('static', filename='js/design.js') }}"></script>
+<script>
+    feather.replace();
+</script>
+{% endblock %} 

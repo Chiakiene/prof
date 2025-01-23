@@ -1,0 +1,78 @@
+<div class="tab-content active" id="basic-tab">
+    <form method="POST" class="settings-form">
+        <input type="hidden" name="form_type" value="basic">
+        
+        <!-- 基本プロフィール -->
+        <div class="settings-section">
+            <h2>基本プロフィール</h2>
+            
+            <div class="form-group">
+                <label for="username">ユーザー名</label>
+                <input type="text" id="username" name="username" 
+                       value="{{ user.username }}"
+                       required minlength="3" maxlength="20">
+                <small class="form-text">3文字以上20文字以内で入力してください</small>
+            </div>
+
+            <div class="form-group">
+                <label for="bio">自己紹介</label>
+                <textarea id="bio" name="bio" rows="4" maxlength="1000">{{ user.bio or '' }}</textarea>
+                <small class="form-text">1000文字以内で入力してください</small>
+            </div>
+
+            <div class="form-group">
+                <label for="location">場所</label>
+                <input type="text" id="location" name="location" 
+                       value="{{ user.location or '' }}"
+                       maxlength="100">
+            </div>
+
+            <div class="form-group">
+                <label for="website">Webサイト</label>
+                <input type="url" id="website" name="website" 
+                       value="{{ user.website or '' }}"
+                       placeholder="https://">
+            </div>
+        </div>
+
+        <!-- カスタムフィールド -->
+        <div class="settings-section">
+            <div class="section-header">
+                <h2>追加項目</h2>
+                <small class="field-counter">
+                    (<span id="field-count">{{ user.custom_fields|length }}</span>/{{ config.MAX_CUSTOM_FIELDS }})
+                </small>
+                <button type="button" class="add-field-button" onclick="addCustomField()">
+                    <i data-feather="plus-circle"></i>
+                    項目を追加
+                </button>
+            </div>
+
+            <div id="custom-fields-container">
+                {% for field in user.custom_fields %}
+                <div class="custom-field">
+                    <div class="field-header">
+                        <input type="text" name="custom_labels[]" 
+                               value="{{ field.label }}"
+                               placeholder="項目名" maxlength="50">
+                        <button type="button" class="remove-field" onclick="removeCustomField(this)">
+                            <i data-feather="x"></i>
+                        </button>
+                    </div>
+                    <input type="text" name="custom_values[]" 
+                           value="{{ field.value }}"
+                           placeholder="内容" maxlength="200">
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- 保存ボタン -->
+        <div class="form-actions">
+            <button type="submit" class="button button-primary">
+                <i data-feather="save"></i>
+                保存
+            </button>
+        </div>
+    </form>
+</div> 

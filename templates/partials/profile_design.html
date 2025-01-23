@@ -1,0 +1,160 @@
+<div class="tab-content" id="design-tab">
+    <div class="card">
+        <h2>デザイン設定</h2>
+        
+        <!-- プレビュー -->
+        <div class="design-preview">
+            <div id="designPreview">
+                <h3>プレビュー</h3>
+                <p>ここにプレビューが表示されます</p>
+                <a href="#">リンクのサンプル</a>
+            </div>
+        </div>
+
+        <!-- 背景設定 -->
+        <div class="settings-group">
+            <h3>背景設定</h3>
+            <div class="form-group">
+                <label>背景タイプ</label>
+                <div class="radio-group">
+                    <input type="radio" id="bg_type_color" name="background_type" value="color" 
+                           {% if not current_user.design or current_user.design.background_type == 'color' %}checked{% endif %}>
+                    <label for="bg_type_color">色</label>
+                    
+                    <input type="radio" id="bg_type_image" name="background_type" value="image"
+                           {% if current_user.design and current_user.design.background_type == 'image' %}checked{% endif %}>
+                    <label for="bg_type_image">画像</label>
+                </div>
+            </div>
+
+            <div class="background-options color-options" 
+                 {% if not current_user.design or current_user.design.background_type == 'color' %}style="display: block;"{% endif %}>
+                <div class="form-group">
+                    <label for="background_color">背景色</label>
+                    <div class="color-picker-wrapper">
+                        <input type="color" id="background_color" name="background_color" 
+                               value="{{ current_user.design.background_color if current_user.design else '#f7f9fc' }}">
+                        <span class="color-value">{{ current_user.design.background_color if current_user.design else '#f7f9fc' }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="background-options image-options"
+                 {% if current_user.design and current_user.design.background_type == 'image' %}style="display: block;"{% endif %}>
+                <div class="form-group">
+                    <label for="background_image">背景画像</label>
+                    <input type="file" id="background_image" name="background_image" accept="image/*">
+                    {% if current_user.design and current_user.design.background_image %}
+                        <div class="background-image-preview">
+                            <img src="{{ url_for('static', filename=current_user.design.background_image) }}" alt="現在の背景画像">
+                            <button type="button" class="delete-image-button" onclick="deleteBackgroundImage()">
+                                <i data-feather="trash-2"></i>
+                                画像を削除
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="background_opacity">背景の透過度</label>
+                <div class="range-control">
+                    <input type="range" id="background_opacity" name="background_opacity" 
+                           min="0" max="100" step="1"
+                           value="{{ (current_user.design.background_opacity * 100) if current_user.design else 100 }}">
+                    <span id="opacity-value">{{ (current_user.design.background_opacity * 100) if current_user.design else 100 }}%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- フォント設定 -->
+        <div class="settings-group">
+            <h3>フォント設定</h3>
+            <div class="form-group">
+                <label for="text_color">文字色</label>
+                <div class="color-picker-wrapper">
+                    <input type="color" id="text_color" name="text_color" 
+                           value="{{ current_user.design.text_color if current_user.design else '#2c3e50' }}">
+                    <span class="color-value">{{ current_user.design.text_color if current_user.design else '#2c3e50' }}</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="font_family">フォント</label>
+                <select id="font_family" name="font_family">
+                    <option value="'Noto Sans JP', sans-serif" 
+                            {% if not current_user.design or current_user.design.font_family == "'Noto Sans JP', sans-serif" %}selected{% endif %}>
+                        Noto Sans JP
+                    </option>
+                    <option value="'M PLUS 1p', sans-serif"
+                            {% if current_user.design and current_user.design.font_family == "'M PLUS 1p', sans-serif" %}selected{% endif %}>
+                        M PLUS 1p
+                    </option>
+                    <option value="'Kosugi Maru', sans-serif"
+                            {% if current_user.design and current_user.design.font_family == "'Kosugi Maru', sans-serif" %}selected{% endif %}>
+                        Kosugi Maru
+                    </option>
+                    <option value="'Sawarabi Gothic', sans-serif"
+                            {% if current_user.design and current_user.design.font_family == "'Sawarabi Gothic', sans-serif" %}selected{% endif %}>
+                        Sawarabi Gothic
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="font_size">本文の文字サイズ</label>
+                <div class="range-control">
+                    <input type="range" id="font_size" name="font_size" 
+                           min="12" max="24" step="1"
+                           value="{{ current_user.design.font_size if current_user.design else 16 }}">
+                    <span id="font-size-value">{{ current_user.design.font_size if current_user.design else 16 }}px</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="heading_size">見出しの文字サイズ</label>
+                <div class="range-control">
+                    <input type="range" id="heading_size" name="heading_size" 
+                           min="16" max="36" step="1"
+                           value="{{ current_user.design.heading_size if current_user.design else 24 }}">
+                    <span id="heading-size-value">{{ current_user.design.heading_size if current_user.design else 24 }}px</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>文字の縁取り</label>
+                <div class="radio-group">
+                    <input type="radio" id="border_disabled" name="text_border_enabled" value="false"
+                           {% if not current_user.design or not current_user.design.text_border_enabled %}checked{% endif %}>
+                    <label for="border_disabled">なし</label>
+                    
+                    <input type="radio" id="border_enabled" name="text_border_enabled" value="true"
+                           {% if current_user.design and current_user.design.text_border_enabled %}checked{% endif %}>
+                    <label for="border_enabled">あり</label>
+                </div>
+
+                <div class="text-border-options" 
+                     {% if not current_user.design or not current_user.design.text_border_enabled %}style="display: none;"{% endif %}>
+                    <div class="form-group">
+                        <label for="text_border_color">縁取りの色</label>
+                        <div class="color-picker-wrapper">
+                            <input type="color" id="text_border_color" name="text_border_color" 
+                                   value="{{ current_user.design.text_border_color if current_user.design else '#ffffff' }}">
+                            <span class="color-value">{{ current_user.design.text_border_color if current_user.design else '#ffffff' }}</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="text_border_size">縁取りの太さ</label>
+                        <div class="range-control">
+                            <input type="range" id="text_border_size" name="text_border_size" 
+                                   min="0.5" max="3" step="0.5"
+                                   value="{{ current_user.design.text_border_size if current_user.design else 1 }}">
+                            <span id="border-size-value">{{ current_user.design.text_border_size if current_user.design else 1 }}px</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+
+{% block title %}プロフィール設定{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-card">
+        <!-- プロフィールヘッダー -->
+        <div class="profile-header">
+            <div class="avatar-container">
+                {% if current_user.avatar_url %}
+                    <img src="{{ url_for('static', filename=current_user.avatar_url) }}" 
+                         alt="プロフィール画像" 
+                         class="avatar">
+                {% else %}
+                    <i data-feather="user" class="avatar-placeholder"></i>
+                {% endif %}
+                <button type="button" class="avatar-upload" id="avatarUpload">
+                    <i data-feather="camera"></i>
+                </button>
+            </div>
+            <h1>{{ current_user.username }}</h1>
+            
+            <!-- プロフィールURL -->
+            <div class="profile-url">
+                <div class="url-container">
+                    <i data-feather="link"></i>
+                    <input type="text" readonly 
+                           value="{{ url_for('profile.view', username=current_user.username, _external=True) }}"
+                           id="profileUrl">
+                    <button type="button" class="button button-icon" onclick="copyProfileUrl()">
+                        <i data-feather="copy"></i>
+                    </button>
+                </div>
+                <small class="form-text">あなたのプロフィールページのURL</small>
+            </div>
+        </div>
+
+        <!-- プロフィールフォーム -->
+        <form method="POST" action="{{ url_for('profile.update') }}" class="profile-form">
+            <!-- アカウント情報 -->
+            <div class="form-section">
+                <h2><i data-feather="user"></i> アカウント情報</h2>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="username">ユーザー名</label>
+                        <input type="text" id="username" name="username" 
+                               value="{{ current_user.username }}" required 
+                               minlength="3" maxlength="50">
+                        <small class="form-text">3文字以上50文字以内</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="user_id">ユーザーID</label>
+                        <input type="text" id="user_id" name="user_id" 
+                               value="{{ current_user.user_id }}" required 
+                               minlength="3" maxlength="30"
+                               pattern="[a-zA-Z0-9_-]+">
+                        <small class="form-text">半角英数字、ハイフン、アンダースコアのみ</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">メールアドレス</label>
+                        <input type="email" id="email" name="email" 
+                               value="{{ current_user.email }}" required maxlength="255">
+                        <small class="form-text">有効なメールアドレス</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- パスワード変更 -->
+            <div class="form-section collapsible">
+                <h2 class="collapsible-header">
+                    <i data-feather="key"></i> パスワード変更
+                    <button type="button" class="button-icon toggle-button">
+                        <i data-feather="chevron-down"></i>
+                    </button>
+                </h2>
+                <div class="collapsible-content">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="current_password">現在のパスワード</label>
+                            <div class="password-input">
+                                <input type="password" id="current_password" name="current_password" 
+                                       minlength="8" maxlength="100">
+                                <button type="button" class="button-icon toggle-password">
+                                    <i data-feather="eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="new_password">新しいパスワード</label>
+                            <div class="password-input">
+                                <input type="password" id="new_password" name="new_password" 
+                                       minlength="8" maxlength="100">
+                                <button type="button" class="button-icon toggle-password">
+                                    <i data-feather="eye"></i>
+                                </button>
+                            </div>
+                            <small class="form-text">8文字以上の強力なパスワード</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirm_password">パスワード（確認）</label>
+                            <div class="password-input">
+                                <input type="password" id="confirm_password" name="confirm_password" 
+                                       minlength="8" maxlength="100">
+                                <button type="button" class="button-icon toggle-password">
+                                    <i data-feather="eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- プロフィール情報 -->
+            <div class="form-section">
+                <h2><i data-feather="info"></i> プロフィール情報</h2>
+                
+                <div class="form-group">
+                    <label for="bio">自己紹介</label>
+                    <textarea id="bio" name="bio" rows="4" 
+                        maxlength="1000"
+                        placeholder="自己紹介を入力してください">{{ current_user.bio or '' }}</textarea>
+                    <div class="textarea-footer">
+                        <small class="form-text">マークダウン記法が使用できます</small>
+                        <span class="char-count">0/1000</span>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="location">場所</label>
+                        <div class="input-icon">
+                            <i data-feather="map-pin"></i>
+                            <input type="text" id="location" name="location" 
+                                value="{{ current_user.location or '' }}"
+                                maxlength="100"
+                                placeholder="例：東京都">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="website">Webサイト</label>
+                        <div class="input-icon">
+                            <i data-feather="globe"></i>
+                            <input type="url" id="website" name="website" 
+                                value="{{ current_user.website or '' }}"
+                                maxlength="255"
+                                placeholder="https://example.com">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- カスタムフィールド -->
+            <div class="form-section">
+                <h2>
+                    <i data-feather="list"></i> 
+                    カスタムフィールド
+                    <button type="button" class="button button-small" id="addField" 
+                            {% if current_user.custom_fields|length >= 20 %}disabled{% endif %}>
+                        <i data-feather="plus"></i>
+                        追加
+                    </button>
+                </h2>
+                
+                <div class="custom-fields-container">
+                    <div id="customFields">
+                        {% for field in current_user.custom_fields %}
+                        <div class="custom-field">
+                            <div class="drag-handle">
+                                <i data-feather="grip-vertical"></i>
+                            </div>
+                            <div class="field-inputs">
+                                <div class="form-group">
+                                    <input type="text" name="label_{{ loop.index0 }}" 
+                                           placeholder="ラベル" value="{{ field.label }}" 
+                                           maxlength="50">
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" name="value_{{ loop.index0 }}" 
+                                           placeholder="値" value="{{ field.value }}" 
+                                           maxlength="500">
+                                </div>
+                            </div>
+                            <button type="button" class="button-icon remove-field" title="削除">
+                                <i data-feather="trash-2"></i>
+                            </button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <small class="form-text">ドラッグ&ドロップで並び替えができます（最大20個）</small>
+                </div>
+            </div>
+
+            <!-- 保存ボタン -->
+            <div class="form-actions">
+                <button type="submit" class="button button-primary">
+                    <i data-feather="save"></i>
+                    変更を保存
+                </button>
+            </div>
+        </form>
+
+        <!-- アカウント管理 -->
+        <div class="form-section danger-zone">
+            <h2><i data-feather="alert-triangle"></i> アカウント管理</h2>
+            
+            <div class="danger-actions">
+                <button type="button" class="button button-danger" onclick="confirmDeleteAccount()">
+                    <i data-feather="trash-2"></i>
+                    アカウントを削除
+                </button>
+            </div>
+            <small class="form-text text-danger">アカウントを削除すると、すべてのデータが完全に削除されます</small>
+        </div>
+    </div>
+</div>
+
+<!-- 画像アップロードモーダル -->
+<div id="uploadModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>プロフィール画像</h2>
+            <button type="button" class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="file" id="imageInput" accept="image/*" style="display: none;">
+            <button type="button" class="button" id="selectImage">
+                <i data-feather="image"></i>
+                画像を選択
+            </button>
+            <div id="previewContainer" style="display: none;">
+                <img id="preview" src="" alt="プレビュー">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="button" id="cancelUpload">キャンセル</button>
+            <button type="button" class="button button-primary" id="uploadImage" disabled>
+                <i data-feather="upload"></i>
+                アップロード
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="{{ url_for('static', filename='js/profile.js') }}"></script>
+<script>
+function copyProfileUrl() {
+    const urlInput = document.getElementById('profileUrl');
+    urlInput.select();
+    document.execCommand('copy');
+    showMessage('プロフィールURLをコピーしました', 'success');
+}
+
+function confirmDeleteAccount() {
+    if (confirm('本当にアカウントを削除しますか？\nこの操作は取り消せません。')) {
+        // アカウント削除のAPIを呼び出す
+        fetch('/profile/delete_account', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = '/auth/login';
+            } else {
+                showMessage('アカウントの削除に失敗しました', 'error');
+            }
+        })
+        .catch(error => {
+            showMessage('エラーが発生しました', 'error');
+        });
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,53 @@
+<div id="cropModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>画像のトリミング</h2>
+            <button type="button" class="close-button" onclick="closeCropModal()">
+                <i data-feather="x"></i>
+            </button>
+        </div>
+        
+        <div class="modal-body">
+            <!-- トリミングエリア -->
+            <div id="cropArea" class="crop-area">
+                <img id="cropImage" src="" alt="トリミング画像">
+            </div>
+            
+            <!-- トリミング設定 -->
+            <div class="trim-controls">
+                <div class="zoom-controls">
+                    <button type="button" onclick="adjustZoom(-0.1)">
+                        <i data-feather="minus"></i>
+                    </button>
+                    <input type="range" id="zoomRange" min="0.5" max="2" step="0.1" value="1">
+                    <button type="button" onclick="adjustZoom(0.1)">
+                        <i data-feather="plus"></i>
+                    </button>
+                </div>
+                
+                <div class="image-controls">
+                    <button type="button" onclick="rotateImage(-90)">
+                        <i data-feather="rotate-ccw"></i>
+                    </button>
+                    <button type="button" onclick="rotateImage(90)">
+                        <i data-feather="rotate-cw"></i>
+                    </button>
+                    <button type="button" onclick="flipImage('horizontal')">
+                        <i data-feather="shuffle"></i>
+                    </button>
+                    <button type="button" onclick="flipImage('vertical')">
+                        <i data-feather="shuffle" style="transform: rotate(90deg)"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal-footer">
+            <button type="button" class="button" onclick="closeCropModal()">キャンセル</button>
+            <button type="button" class="button button-primary" onclick="saveCroppedImage()">
+                <i data-feather="check"></i>
+                保存
+            </button>
+        </div>
+    </div>
+</div> 

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}ページが見つかりません{% endblock %}
+
+{% block content %}
+<div class="error-container">
+    <div class="error-content">
+        <h1>404</h1>
+        <h2>ページが見つかりません</h2>
+        <p>{{ error }}</p>
+        <div class="error-actions">
+            <a href="{{ url_for('profile') }}" class="button">
+                <i data-feather="home"></i>
+                ホームに戻る
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %} 
